@@ -36,10 +36,10 @@ const ChatApp = ({ user, onLogout }) => {
   const { sendMessage: sendSocketMessage, notifyVoiceMessageSent } = useSocket(
     token,
     (newMessage) => {
-      setChatMessages(prev => [...prev, newMessage]);
+      setChatMessages((prev) => [...prev, newMessage]);
     },
     (newVoiceMessage) => {
-      setChatMessages(prev => [...prev, newVoiceMessage]);
+      setChatMessages((prev) => [...prev, newVoiceMessage]);
     }
   );
 
@@ -166,7 +166,7 @@ const ChatApp = ({ user, onLogout }) => {
         messageType: "text",
       });
 
-      setChatMessages(prev => [...prev, newMessage]);
+      setChatMessages((prev) => [...prev, newMessage]);
       setMessage("");
     }
   };
@@ -185,7 +185,7 @@ const ChatApp = ({ user, onLogout }) => {
       const data = await response.json();
       if (data.success) {
         const voiceMessage = data.data;
-        setChatMessages(prev => [...prev, { ...voiceMessage, isOwn: true }]);
+        setChatMessages((prev) => [...prev, { ...voiceMessage, isOwn: true }]);
         notifyVoiceMessageSent({
           groupId: activeChat === "group" ? "product-design-team" : null,
           message: voiceMessage,
@@ -207,56 +207,74 @@ const ChatApp = ({ user, onLogout }) => {
 
   const Sidebar = () => (
     <div className="w-16 bg-white/80 backdrop-blur-md border-r border-slate-200 flex flex-col items-center py-4 space-y-6 shadow-sm">
-      <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+      {/* <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
         <MessageCircle className="w-6 h-6 text-white" />
-      </div>
+      </div> */}
 
       <nav className="flex flex-col space-y-4">
-        <button 
+        <button
           onClick={() => setActiveTab("chat")}
           className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105 group ${
-            activeTab === "chat" ? "bg-blue-600" : "bg-slate-100 hover:bg-indigo-50"
+            activeTab === "chat"
+              ? "bg-blue-600"
+              : "bg-slate-100 hover:bg-indigo-50"
           }`}
         >
-          <MessageCircle className={`w-5 h-5 ${
-            activeTab === "chat" ? "text-white" : "text-slate-600 group-hover:text-blue-600"
-          }`} />
+          <MessageCircle
+            className={`w-5 h-5 ${
+              activeTab === "chat"
+                ? "text-white"
+                : "text-slate-600 group-hover:text-blue-600"
+            }`}
+          />
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab("friends")}
           className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105 group ${
-            activeTab === "friends" ? "bg-blue-600" : "bg-slate-100 hover:bg-indigo-50"
+            activeTab === "friends"
+              ? "bg-blue-600"
+              : "bg-slate-100 hover:bg-indigo-50"
           }`}
         >
-          <UserPlus className={`w-5 h-5 ${
-            activeTab === "friends" ? "text-white" : "text-slate-600 group-hover:text-blue-600"
-          }`} />
+          <UserPlus
+            className={`w-5 h-5 ${
+              activeTab === "friends"
+                ? "text-white"
+                : "text-slate-600 group-hover:text-blue-600"
+            }`}
+          />
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab("feed")}
           className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105 group ${
-            activeTab === "feed" ? "bg-blue-600" : "bg-slate-100 hover:bg-indigo-50"
+            activeTab === "feed"
+              ? "bg-blue-600"
+              : "bg-slate-100 hover:bg-indigo-50"
           }`}
         >
-          <Volume2 className={`w-5 h-5 ${
-            activeTab === "feed" ? "text-white" : "text-slate-600 group-hover:text-blue-600"
-          }`} />
+          <Volume2
+            className={`w-5 h-5 ${
+              activeTab === "feed"
+                ? "text-white"
+                : "text-slate-600 group-hover:text-blue-600"
+            }`}
+          />
         </button>
       </nav>
 
-        <button className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-50 flex items-center justify-center transition-all duration-200 hover:scale-105 group">
-          <Home className="w-5 h-5 text-slate-600 group-hover:text-blue-600" />
-        </button>
-        <button className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-50 flex items-center justify-center transition-all duration-200 hover:scale-105 group">
-          <Search className="w-5 h-5 text-slate-600 group-hover:text-blue-600" />
-        </button>
-        <button className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-50 flex items-center justify-center transition-all duration-200 hover:scale-105 group">
-          <Bell className="w-5 h-5 text-slate-600 group-hover:text-blue-600" />
-        </button>
-        <button className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-50 flex items-center justify-center transition-all duration-200 hover:scale-105 group">
-          <User className="w-5 h-5 text-slate-600 group-hover:text-blue-600" />
-        </button>
-      </nav>
+      {/* Sidebar utility buttons */}
+      <button className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-50 flex items-center justify-center transition-all duration-200 hover:scale-105 group">
+        <Home className="w-5 h-5 text-slate-600 group-hover:text-blue-600" />
+      </button>
+      <button className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-50 flex items-center justify-center transition-all duration-200 hover:scale-105 group">
+        <Search className="w-5 h-5 text-slate-600 group-hover:text-blue-600" />
+      </button>
+      <button className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-50 flex items-center justify-center transition-all duration-200 hover:scale-105 group">
+        <Bell className="w-5 h-5 text-slate-600 group-hover:text-blue-600" />
+      </button>
+      <button className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-indigo-50 flex items-center justify-center transition-all duration-200 hover:scale-105 group">
+        <User className="w-5 h-5 text-slate-600 group-hover:text-blue-600" />
+      </button>
 
       <div className="flex-1" />
 
@@ -267,9 +285,11 @@ const ChatApp = ({ user, onLogout }) => {
   );
 
   const ChatSelector = () => (
-    <div className={`w-80 bg-slate-50 border-r border-slate-200 flex flex-col ${
-      activeTab !== "chat" ? "hidden" : ""
-    }`}>
+    <div
+      className={`w-80 bg-slate-50 border-r border-slate-200 flex flex-col ${
+        activeTab !== "chat" ? "hidden" : ""
+      }`}
+    >
       <div className="p-6 border-b border-slate-200 bg-white">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-slate-900">Messages</h2>
@@ -375,7 +395,11 @@ const ChatApp = ({ user, onLogout }) => {
   );
 
   const ChatHeader = () => (
-    <div className={`bg-white border-b border-slate-200 px-6 py-4 ${activeTab !== "chat" ? "hidden" : ""}`}>
+    <div
+      className={`bg-white border-b border-slate-200 px-6 py-4 ${
+        activeTab !== "chat" ? "hidden" : ""
+      }`}
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           {activeChat === "group" ? (
@@ -449,7 +473,9 @@ const ChatApp = ({ user, onLogout }) => {
         <img
           src={
             msg.avatar ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(msg.sender?.username || msg.sender || "User")}`
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+              msg.sender?.username || msg.sender || "User"
+            )}`
           }
           alt={msg.sender?.username || msg.sender || "User"}
           className="w-8 h-8 rounded-full mr-3 mt-1 object-cover"
@@ -461,7 +487,7 @@ const ChatApp = ({ user, onLogout }) => {
             {msg.sender?.username || msg.sender || "User"}
           </p>
         )}
-        
+
         {msg.messageType === "voice" || msg.voiceUrl ? (
           <div
             className={`px-4 py-3 rounded-2xl shadow-sm transition-all hover:shadow-md ${
@@ -487,16 +513,17 @@ const ChatApp = ({ user, onLogout }) => {
             <p className="text-sm leading-relaxed">{msg.content}</p>
           </div>
         )}
-        
+
         <p
           className={`text-xs text-slate-500 mt-1 ${
             msg.isOwn ? "text-right mr-2" : "ml-2"
           }`}
         >
-          {msg.time || new Date(msg.createdAt).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}{" "}
+          {msg.time ||
+            new Date(msg.createdAt).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}{" "}
           {msg.isOwn && <span className="text-blue-600">• Sent</span>}
         </p>
       </div>
@@ -504,7 +531,11 @@ const ChatApp = ({ user, onLogout }) => {
   );
 
   const ChatWindow = () => (
-    <div className={`flex-1 flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 ${activeTab !== "chat" ? "hidden" : ""}`}>
+    <div
+      className={`flex-1 flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 ${
+        activeTab !== "chat" ? "hidden" : ""
+      }`}
+    >
       <ChatHeader />
       <div className="flex-1 overflow-y-auto p-6">
         {chatMessages.map((msg) => (
@@ -512,7 +543,7 @@ const ChatApp = ({ user, onLogout }) => {
         ))}
         <div ref={messagesEndRef} />
       </div>
-      
+
       {showVoiceRecorder && (
         <div className="px-6 pb-4">
           <VoiceRecorder
@@ -523,22 +554,24 @@ const ChatApp = ({ user, onLogout }) => {
           />
         </div>
       )}
-      
+
       <div className="border-t border-slate-200 bg-white px-6 py-4">
         <div className="flex items-center space-x-3">
-          <button 
+          <button
             onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}
             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105 group ${
-              showVoiceRecorder 
-                ? "bg-red-100 hover:bg-red-200" 
+              showVoiceRecorder
+                ? "bg-red-100 hover:bg-red-200"
                 : "bg-slate-100 hover:bg-indigo-50"
             }`}
           >
-            <Mic className={`w-5 h-5 ${
-              showVoiceRecorder 
-                ? "text-red-600" 
-                : "text-slate-600 group-hover:text-blue-600"
-            }`} />
+            <Mic
+              className={`w-5 h-5 ${
+                showVoiceRecorder
+                  ? "text-red-600"
+                  : "text-slate-600 group-hover:text-blue-600"
+              }`}
+            />
           </button>
           <div className="flex-1">
             <input
