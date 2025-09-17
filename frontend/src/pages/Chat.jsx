@@ -223,73 +223,11 @@ const ChatApp = ({ user, onLogout }) => {
   };
 
   // Fixed voice message sending
-  // const handleSendVoice = async (audioBlob, duration) => {
-  //   if (!activeChat || !audioBlob) return;
-
-  //   try {
-  //     setLoading(true);
-
-  //     // const formData = new FormData();
-  //     // formData.append("voice", audioBlob, "voice-message.webm"); // field name must match backend
-  //     const formData = new FormData();
-  //     const blob = new Blob([audioBlob], { type: "audio/webm" });
-  //     formData.append("voice", blob, "voice-message.webm");
-  //     formData.append("recipient", activeChat._id);
-  //     formData.append("duration", (duration || 0).toString());
-
-  //     const response = await fetch("http://localhost:8080/api/voice/messages", {
-  //       method: "POST",
-  //       headers: { Authorization: `Bearer ${token}` }, // ❌ no Content-Type here
-  //       body: formData,
-  //     });
-
-  //     const data = await response.json();
-  //     if (data.success) {
-  //       const voiceMessage = {
-  //         ...data.data,
-  //         isOwn: true,
-  //         messageType: "voice",
-  //       };
-
-  //       setChatMessages((prev) => [...prev, voiceMessage]);
-
-  //       // notifyVoiceMessageSent({
-  //       //   recipientId: activeChat._id,
-  //       //   message: voiceMessage,
-  //       // });
-  //       sendVoiceMessage({
-  //         recipientId: activeChat._id,
-  //         message: voiceMessage,
-  //       });
-
-  //       toast.success("Voice message sent!");
-  //       fetchConversations();
-  //       setShowVoiceRecorder(false);
-  //     } else {
-  //       toast.error(data.message || "Failed to send voice message");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error sending voice message:", error);
-  //     toast.error("Failed to send voice message");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  const handleSendVoice = async (audioBlob, duration) => {
+  const handleSendVoice = async (formData) => {
     if (!activeChat || !audioBlob) return;
 
     try {
       setLoading(true);
-
-      const blob =
-        audioBlob instanceof Blob
-          ? audioBlob
-          : new Blob([audioBlob], { type: "audio/webm" });
-
-      const formData = new FormData();
-      formData.append("voice", blob, "voice-message.webm");
-      formData.append("recipient", activeChat._id);
-      formData.append("duration", (duration || 0).toString()); // ✅ safe fallback
 
       const response = await fetch("http://localhost:8080/api/voice/messages", {
         method: "POST",
@@ -705,8 +643,7 @@ const ChatApp = ({ user, onLogout }) => {
           {showVoiceRecorder && (
             <div className="px-6 pb-4">
               <VoiceRecorder
-                onSendVoice={handleSendVoice}
-                onCancel={() => setShowVoiceRecorder(false)}
+                onSendVoice={(formData) => handleSendVoice(formData)}
                 isGroup={false}
                 recipientId={activeChat._id}
               />
@@ -741,6 +678,7 @@ const ChatApp = ({ user, onLogout }) => {
                   onKeyDown={handleKeyDown}
                   disabled={showVoiceRecorder}
                   className="w-full px-4 py-2.5 bg-slate-100 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm disabled:opacity-50"
+                  autoComplete="off"
                 />
               </div>
               <button
