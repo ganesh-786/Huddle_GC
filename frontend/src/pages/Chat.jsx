@@ -35,7 +35,6 @@ const ChatApp = ({ user, onLogout }) => {
   const [sendingMessage, setSendingMessage] = useState(false);
   const token = Cookies.get("token");
   const messagesEndRef = useRef(null);
-  const messageInputRef = useRef(null);
 
   // Socket connection
   const getCurrentUserId = () => {
@@ -89,13 +88,6 @@ const ChatApp = ({ user, onLogout }) => {
   useEffect(() => {
     scrollToBottom();
   }, [chatMessages]);
-
-  // Auto-focus input after sending message
-  useEffect(() => {
-    if (messageInputRef.current) {
-      messageInputRef.current.focus();
-    }
-  }, []); // only once
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -224,11 +216,9 @@ const ChatApp = ({ user, onLogout }) => {
 
   // Fixed voice message sending
   const handleSendVoice = async (formData) => {
-    if (!activeChat || !audioBlob) return;
+    if (!activeChat) return;
 
     try {
-      setLoading(true);
-
       const response = await fetch("http://localhost:8080/api/voice/messages", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -259,8 +249,6 @@ const ChatApp = ({ user, onLogout }) => {
     } catch (error) {
       console.error("Error sending voice message:", error);
       toast.error("Failed to send voice message");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -670,7 +658,6 @@ const ChatApp = ({ user, onLogout }) => {
               </button>
               <div className="flex-1">
                 <input
-                  ref={messageInputRef}
                   type="text"
                   placeholder="Type a message..."
                   value={message}
@@ -678,7 +665,6 @@ const ChatApp = ({ user, onLogout }) => {
                   onKeyDown={handleKeyDown}
                   disabled={showVoiceRecorder}
                   className="w-full px-4 py-2.5 bg-slate-100 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm disabled:opacity-50"
-                  autoComplete="off"
                 />
               </div>
               <button

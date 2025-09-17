@@ -26,12 +26,12 @@ export const useSocket = (token, onNewMessage, onNewVoiceMessage) => {
     });
 
     // Incoming text messages
-    socket.on("message", (msg) => {
+    socket.on("new-message", (msg) => {
       onNewMessage?.(msg);
     });
 
     // Incoming voice messages
-    socket.on("voice-message", (msg) => {
+    socket.on("new-voice-message", (msg) => {
       onNewVoiceMessage?.(msg);
     });
 
@@ -47,11 +47,11 @@ export const useSocket = (token, onNewMessage, onNewVoiceMessage) => {
 
   // Emitters
   const sendMessage = (payload) => {
-    socketRef.current?.emit("message", payload);
+    socketRef.current?.emit("send-message", payload);
   };
 
   const sendVoiceMessage = (payload) => {
-    socketRef.current?.emit("voice-message", payload);
+    socketRef.current?.emit("voice-message-sent", payload);
   };
 
   const sendTyping = (data) => {
