@@ -1,4 +1,3 @@
-import React, { useState, useEffect, useRef } from "react";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
@@ -253,12 +252,15 @@ const ChatApp = ({ user, onLogout }) => {
     }
   };
 
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  }, [message, activeChat, sendingMessage]);
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleSendMessage();
+      }
+    },
+    [message, activeChat, sendingMessage]
+  );
 
   const selectChat = (friend) => {
     setActiveChat(friend);
