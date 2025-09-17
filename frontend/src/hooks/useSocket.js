@@ -1,105 +1,68 @@
-import { useEffect, useRef } from "react";
+// src/hooks/useSocket.js
+import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
 export const useSocket = (token, onNewMessage, onNewVoiceMessage) => {
   const socketRef = useRef(null);
+  const [socketReady, setSocketReady] = useState(false);
 
   useEffect(() => {
     if (!token) return;
 
-    // Initialize socket connection
-    socketRef.current = io("http://localhost:8080", {
-      auth: {
-        token,
-      },
+    const socket = io("http://localhost:8080", {
+      auth: { token },
     });
 
-    const socket = socketRef.current;
+    socketRef.current = socket;
 
-    // Connection events
     socket.on("connect", () => {
-      console.log("Connected to server");
+      console.log("✅ Connected to server:", socket.id);
+      setSocketReady(true);
     });
 
     socket.on("disconnect", () => {
-      console.log("Disconnected from server");
+      console.log("❌ Disconnected from server");
+      setSocketReady(false);
     });
 
-    // Message events
-    socket.on("new-message", (message) => {
-      if (onNewMessage) {
-        onNewMessage(message);
-      }
+    // Incoming text messages
+    socket.on("message", (msg) => {
+      onNewMessage?.(msg);
     });
 
-    socket.on("new-voice-message", (message) => {
-      if (onNewVoiceMessage) {
-        onNewVoiceMessage(message);
-      }
+    // Incoming voice messages
+    socket.on("voice-message", (msg) => {
+      onNewVoiceMessage?.(msg);
     });
 
-    socket.on("message-sent", (message) => {
-      console.log("Message sent successfully:", message);
-    });
+    // Optional logs
+    socket.on("message-sent", (msg) => console.log("Message delivered:", msg));
+    socket.on("message-error", (err) => console.error("Message error:", err));
 
-    socket.on("message-error", (error) => {
-      console.error("Message error:", error);
-    });
-
-    // Typing events
-    socket.on("user-typing", (data) => {
-      console.log("User typing:", data);
-    });
-
-    // Friend request events
-    socket.on("new-friend-request", (data) => {
-      console.log("New friend request:", data);
-    });
-
-    // Cleanup on unmount
     return () => {
-      if (socket) {
-        socket.disconnect();
-      }
+      socket.removeAllListeners();
+      socket.disconnect();
     };
   }, [token, onNewMessage, onNewVoiceMessage]);
 
-  const sendMessage = (data) => {
-    if (socketRef.current) {
-      socketRef.current.emit("send-message", data);
-    }
+  // Emitters
+  const sendMessage = (payload) => {
+    socketRef.current?.emit("message", payload);
   };
 
-  const joinGroup = (groupId) => {
-    if (socketRef.current) {
-      socketRef.current.emit("join-group", groupId);
-    }
-  };
-
-  const leaveGroup = (groupId) => {
-    if (socketRef.current) {
-      socketRef.current.emit("leave-group", groupId);
-    }
+  const sendVoiceMessage = (payload) => {
+    socketRef.current?.emit("voice-message", payload);
   };
 
   const sendTyping = (data) => {
-    if (socketRef.current) {
-      socketRef.current.emit("typing", data);
-    }
-  };
-
-  const notifyVoiceMessageSent = (data) => {
-    if (socketRef.current) {
-      socketRef.current.emit("voice-message-sent", data);
-    }
+    socketRef.current?.emit("typing", data);
   };
 
   return {
     socket: socketRef.current,
+    socketReady,
     sendMessage,
-    joinGroup,
-    leaveGroup,
+    sendVoiceMessage,
     sendTyping,
-    notifyVoiceMessageSent,
   };
 };
